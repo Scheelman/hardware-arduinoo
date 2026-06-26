@@ -1,0 +1,72 @@
+#include <Servo.h>
+
+Servo mijnServo;
+
+int servoPin = 6;
+int trigPin = 9;
+int echoPin = 10;
+
+void setup() {
+  // Servo aansluiten op pimn 6
+  mijnServo.attach(servoPin);
+
+  // Trig stuurt het signaal, Echo leest het signaal terug
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  // Serial Monitor gebruik ik om de afstand te kunnen controleren
+  Serial.begin(9600);
+
+  // Servo begint op 0 graden
+  mijnServo.write(0);
+}
+
+void loop() {
+  // Hier meet ik de afstand met de ultrasoon sensor
+  long afstand = meetAfstand();
+
+  // Afstand tonen in de Serial Monitor
+  Serial.print("Afstand: ");
+  Serial.println(afstand);
+
+  // Als het object verder dan 10 cm is, blijft de servo op 0 graden
+  if (afstand > 10) {
+    mijnServo.write(0);
+  }
+  // Als het object heel dichtbij is, draait de servo helemaal naar 180 graden
+  else if (afstand <= 4) {
+    mijnServo.write(180);
+  }
+  // Tussen 10 cm en 4 cm wordt de afstand omgerekend naar een servohoek
+  else {
+    int hoek = map(afstand, 10, 4, 0, 180);
+    mijnServo.write(hoek);
+  }
+
+  // Kleine pauze zodat de meting wat rustiger blijft
+  delay(200);
+}
+
+long meetAfstand() {
+  // Eerst Trig even uitzetten voor een schone meting
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+
+  // Kort signaal sturen vanaf de sensor
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  // Tijd meten totdat Echo het signaal terugkrijgt
+  long tijd = pulseIn(echoPin, HIGH, 30000);
+
+  // Als er niks gemeten wordt, geef ik 999 terug
+  // Daardoor blijft de servo gewoon op 0 graden
+  if (tijd == 0) {
+    return 999;
+  }
+
+  // Tijd omrekenen naar afstand in centimeters
+  long afstand = tijd / 58;
+  return afstand;
+}
