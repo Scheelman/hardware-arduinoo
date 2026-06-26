@@ -1,0 +1,53 @@
+void setup() {
+  // Pinnen voor de 6 ledjes
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+}
+
+void loop() {
+  // Potmeter uitlezen. De waarde is tussen 0 en 1023.
+  int potWaarde = analogRead(A0);
+
+  // Eerst alle ledjes uitzetten
+  digitalWrite(2, LOW);
+  digitalWrite(3, LOW);
+  digitalWrite(4, LOW);
+  digitalWrite(5, LOW);
+  digitalWrite(6, LOW);
+  digitalWrite(7, LOW);
+
+  // Hoe hoger de potmeterwaarde, hoe meer ledjes aangaan
+  if (potWaarde > 150) {
+    digitalWrite(2, HIGH);
+  }
+
+  if (potWaarde > 300) {
+    digitalWrite(3, HIGH);
+  }
+
+  if (potWaarde > 450) {
+    digitalWrite(4, HIGH);
+  }
+
+  if (potWaarde > 600) {
+    digitalWrite(5, HIGH);
+  }
+
+  if (potWaarde > 750) {
+    digitalWrite(6, HIGH);
+  }
+
+  if (potWaarde > 900) {
+    digitalWrite(7, HIGH);
+  }
+
+  // Kleine pauze zodat het stabieler blijft
+  delay(50);
+}
+
+
+
