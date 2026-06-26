@@ -1,0 +1,80 @@
+#include <Servo.h>
+
+Servo mijnServo;
+
+int linkerKnop = 8;
+int rechterKnop = 9;
+int servoPin = 6;
+
+void setup() {
+  // Servo zit op pin 6
+  mijnServo.attach(servoPin);
+
+  // Knoppen gebruiken een 10k weerstand naar GND
+  pinMode(linkerKnop, INPUT);
+  pinMode(rechterKnop, INPUT);
+
+  // Servo begint op 0 graden
+  mijnServo.write(0);
+}
+
+void loop() {
+  // Bij deze aansluiting betekent HIGH dat de knop is ingedrukt
+  int links = digitalRead(linkerKnop);
+  int rechts = digitalRead(rechterKnop);
+
+  // Beide knoppen tegelijk
+  if (links == HIGH && rechts == HIGH) {
+    beweegServo(0, 120, 3000);   // langzaam naar 120 graden
+    delay(5000);                 // 5 seconden wachten
+    beweegServo(120, 0, 500);    // snel terug
+
+    wachtTotLos();
+  }
+
+  // Alleen linker knop
+  else if (links == HIGH) {
+    beweegServo(0, 120, 3000);   // langzaam heen
+    beweegServo(120, 0, 3000);   // langzaam terug
+
+    wachtTotLos();
+  }
+
+  // Alleen rechter knop
+  else if (rechts == HIGH) {
+    beweegServo(0, 120, 500);    // snel heen
+    beweegServo(120, 0, 500);    // snel terug
+
+    wachtTotLos();
+  }
+}
+
+// Servo bewegen van startHoek naar eindHoek
+void beweegServo(int startHoek, int eindHoek, int tijd) {
+  int stappen = abs(eindHoek - startHoek);
+  int wachttijd = tijd / stappen;
+
+  if (startHoek < eindHoek) {
+    for (int hoek = startHoek; hoek <= eindHoek; hoek++) {
+      mijnServo.write(hoek);
+      delay(wachttijd);
+    }
+  } 
+  else {
+    for (int hoek = startHoek; hoek >= eindHoek; hoek--) {
+      mijnServo.write(hoek);
+      delay(wachttijd);
+    }
+  }
+}
+
+// Wachten totdat beide knoppen losgelaten zijn
+void wachtTotLos() {
+  while (digitalRead(linkerKnop) == HIGH || digitalRead(rechterKnop) == HIGH) {
+    delay(10);
+  }
+}
+
+
+
+
